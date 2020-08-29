@@ -47,9 +47,17 @@ object PokerWithTies extends App {
     } else if(handValue1.value < handValue2.value) {
       false
     } else {
-      println(s"we have a tie between ${handValue1} and ${handValue2}, going to kicker cards for tie breaker.")
-      //handValue1.kickerValues.zip(handValue2.kickerValues)
-      false
+      //println(s"we have a tie between ${handValue1} and ${handValue2}, going to kicker cards for tie breaker.")
+      handValue1.kickerValues
+        .zip(handValue2.kickerValues)
+        .filterNot {
+          case (h1, h2) => h1 == h2
+        }
+        .headOption
+        .map {
+          case (h1, h2) => h1 > h2
+        }
+        .getOrElse(false)
     }
   }
 
@@ -134,8 +142,11 @@ object PokerWithTies extends App {
   "8C,8H,10S,KH,KS" winsOver "2S,2D,JH,7S,AC" // two pair
   "AC,AH,3C,QH,10C" winsOver "3S,2D,KH,JS,AD" // one pair
 
-  //more test cases
-  "AC,AH,3C,QH,10C" winsOver "AS,2D,3H,JS,AD" // one pair with tie
+  //more test cases with ties
+  "AC,AH,3C,QH,10C" winsOver "AS,2D,3H,JS,AD" // one pair
+  "KH,KD,KC,4C,4D" winsOver "KH,KD,KC,2C,2D" // full house
+  "8C,9C,10C,JC,QC" winsOver "7C,8C,9C,10C,JC" // straight flush
+  "4H,4D,4C,4S,JS" winsOver "4H,4D,4C,4S,JS" // four of a kind
 
   System.exit(0)
 }
